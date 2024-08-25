@@ -152,5 +152,5 @@ func main() {
 		fmt.Printf("After Unroll LateSet: name=%q, cfgFile=%q, age=%d, male=%v\n", name, cfgFile, age, male)
 		stack.Unroll(fs, false)
 		fmt.Printf("After Unroll EarlySet#2: name=%q, cfgFile=%q, age=%d, male=%v\n", name, cfgFile, age, male)
-		}
+	}
 }
