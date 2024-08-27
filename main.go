@@ -89,6 +89,7 @@ func (s *CfgStack) ProcessCfgFile(path, cfgName string, fs *flag.FlagSet) error 
 	if err != nil {
 		return fmt.Errorf("Error reading config file %s: %w", path, err)
 	}
+	//TODO: Allow inline comments
 	cmds := strings.Split(strings.TrimSpace(strings.ReplaceAll(
 			string(data), "\n", " ")), " ")
 	fs.Parse(cmds)
@@ -98,13 +99,16 @@ func (s *CfgStack) ProcessCfgFile(path, cfgName string, fs *flag.FlagSet) error 
 	fs.Visit(func(f *flag.Flag) {
 		fmt.Printf("-> Flag=%q, Value.String=%q, Default=%q\n", f.Name, f.Value, f.DefValue)
 		for _, cmd := range cmds {
-			if strings.HasPrefix(cmd, "-") && strings.HasSuffix(cmd, f.Name) {
-				fmt.Printf("-> m[%s] = %q\n", f.Name, f.Value)
-				m[f.Name] = f.Value.String()
-				if f.Name == cfgName {
-					cfgFile = f.Value.String()
+			if strings.HasPrefix(cmd, "-") {
+				cmd = strings.SplitN(cmd, "=", 2)[0]
+				if strings.HasSuffix(cmd, f.Name) {
+					fmt.Printf("-> m[%s] = %q\n", f.Name, f.Value)
+					m[f.Name] = f.Value.String()
+					if f.Name == cfgName {
+						cfgFile = f.Value.String()
+					}
+					break
 				}
-				break
 			}
 		}
 	})
